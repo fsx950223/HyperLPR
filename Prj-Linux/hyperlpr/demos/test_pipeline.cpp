@@ -51,9 +51,6 @@ void TEST_ACC(){
         std::cout << "------------------------------------------------" << endl;
         cout << "图片名：" << imagename << endl;
         cv::Mat image = cv::imread(imgpath);
-//		cv::imshow("image", image);
-//		cv::waitKey(0);
-
         std::vector<pr::PlateInfo> res = prc.RunPiplineAsImage(image,pr::SEGMENTATION_FREE_METHOD);
 
         float conf = 0;
@@ -69,7 +66,6 @@ void TEST_ACC(){
             else
                 cout << "no string" << endl;
         }
-        //	std::cout << conf << std::endl;
         int num = con.size();
         float max = 0;
         string platestr, chpr, ch;
@@ -157,14 +153,6 @@ void TEST_CAM()
             std::cout << "读取视频失败" << std::endl;
             exit(1);
         }
-//
-//        cv::transpose(frame,frame);
-//        cv::flip(frame,frame,2);
-
-//        cv::resize(frame,frame,cv::Size(frame.cols/2,frame.rows/2));
-
-
-
         std::vector<pr::PlateInfo> res = prc.RunPiplineAsImage(frame,pr::SEGMENTATION_FREE_METHOD);
 
         for(auto st:res) {

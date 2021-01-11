@@ -10,7 +10,6 @@
 namespace pr {
 
 cv::Mat fastdeskew(cv::Mat skewImage, int blockSize);
-//    cv::Mat spatialTransformer(cv::Mat skewImage);
 
 } // namespace pr
 

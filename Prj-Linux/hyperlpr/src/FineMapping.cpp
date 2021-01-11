@@ -31,6 +31,8 @@ cv::Mat FineMapping::FineMappingHorizon(cv::Mat FinedVertical, int leftPadding,
   cv::Mat cropped = FinedVertical.colRange(front, back).clone();
   return cropped;
 }
+
+
 std::pair<int, int> FitLineRansac(std::vector<cv::Point> pts, int zeroadd = 0) {
   std::pair<int, int> res;
   if (pts.size() > 2) {
@@ -50,6 +52,7 @@ std::pair<int, int> FitLineRansac(std::vector<cv::Point> pts, int zeroadd = 0) {
   res.second = zeroadd;
   return res;
 }
+
 
 cv::Mat FineMapping::FineMappingVertical(cv::Mat InputProposal, int sliceNum,
                                          int upper, int lower,

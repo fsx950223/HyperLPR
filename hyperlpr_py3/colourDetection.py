@@ -2,7 +2,7 @@
 import cv2
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
-import os
+
 
 boundaries = [
     ([100,80,0],[240,220,110]), # yellow

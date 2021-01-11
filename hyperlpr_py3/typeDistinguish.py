@@ -1,12 +1,5 @@
 #coding=utf-8
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D, MaxPool2D
-from keras.optimizers import SGD
-from keras import backend as K
-
-K.image_data_format()
-
+import tensorflow as tf
 
 import cv2
 import numpy as np
@@ -24,21 +17,16 @@ def Getmodel_tensorflow(nb_classes):
     # convolution kernel size
     nb_conv = 3
 
-    # x = np.load('x.npy')
-    # y = np_utils.to_categorical(range(3062)*45*5*2, nb_classes)
-    # weight = ((type_class - np.arange(type_class)) / type_class + 1) ** 3
-    # weight = dict(zip(range(3063), weight / weight.mean()))  # 调整权重，高频字优先
-
-    model = Sequential()
-    model.add(Conv2D(16, (5, 5),input_shape=(img_rows, img_cols,3)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Flatten())
-    model.add(Dense(64))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Conv2D(16, (5, 5),input_shape=(img_rows, img_cols,3)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(64))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dropout(0.5))
+    model.add(tf.keras.layers.Dense(nb_classes))
+    model.add(tf.keras.layers.Activation('softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])

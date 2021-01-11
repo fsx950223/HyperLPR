@@ -1,8 +1,8 @@
 #coding=utf-8
-from . import detect
-from . import  finemapping  as  fm
+from hyperlpr_py3 import detect
+from hyperlpr_py3 import finemapping as fm
 
-from . import segmentation
+from hyperlpr_py3 import segmentation
 import cv2
 
 import time
@@ -14,7 +14,7 @@ from PIL import ImageDraw
 import json
 
 import sys
-from . import typeDistinguish as td
+from hyperlpr_py3 import typeDistinguish as td
 import imp
 
 
@@ -28,9 +28,8 @@ def find_edge(image):
     sum_i = image.sum(axis=0)
     sum_i =  sum_i.astype(np.float)
     sum_i/=image.shape[0]*255
-    # print sum_i
 
-    start= 0 ;
+    start= 0
     end = image.shape[1]-1
 
     for i,one in enumerate(sum_i):
@@ -57,14 +56,10 @@ def find_edge(image):
 #垂直边缘检测
 def verticalEdgeDetection(image):
     image_sobel = cv2.Sobel(image.copy(),cv2.CV_8U,1,0)
-    # image = auto_canny(image_sobel)
 
     # img_sobel, CV_8U, 1, 0, 3, 1, 0, BORDER_DEFAULT
-    # canny_image  = auto_canny(image)
     flag,thres = cv2.threshold(image_sobel,0,255,cv2.THRESH_OTSU|cv2.THRESH_BINARY)
-    print(flag)
-    flag,thres = cv2.threshold(image_sobel,int(flag*0.7),255,cv2.THRESH_BINARY)
-    # thres = simpleThres(image_sobel)
+    flag, thres = cv2.threshold(image_sobel,int(flag*0.7),255,cv2.THRESH_BINARY)
     kernal = np.ones(shape=(3,15))
     thres = cv2.morphologyEx(thres,cv2.MORPH_CLOSE,kernal)
     return thres
@@ -74,10 +69,8 @@ def verticalEdgeDetection(image):
 def horizontalSegmentation(image):
 
     thres = verticalEdgeDetection(image)
-    # thres = thres*image
     head,tail = find_edge(thres)
-    # print head,tail
-    # cv2.imshow("edge",thres)
+
     tail = tail+5
     if tail>135:
         tail = 135
@@ -93,7 +86,6 @@ def drawRectBox(image,rect,addText):
 
     img = Image.fromarray(image)
     draw = ImageDraw.Draw(img)
-    #draw.text((int(rect[0]+1), int(rect[1]-16)), addText.decode("utf-8"), (255, 255, 255), font=fontC)
     draw.text((int(rect[0]+1), int(rect[1]-16)), addText, (255, 255, 255), font=fontC)
     imagex = np.array(img)
 
@@ -109,31 +101,25 @@ def RecognizePlateJson(image):
     for j,plate in enumerate(images):
         plate,rect,origin_plate =plate
         res, confidence = e2e.recognizeOne(origin_plate)
-        print("res",res)
 
         cv2.imwrite("./"+str(j)+"_rough.jpg",plate)
 
-        # print "车牌类型:",ptype
-        # plate = cv2.cvtColor(plate, cv2.COLOR_RGB2GRAY)
         plate  =cv2.resize(plate,(136,int(36*2.5)))
-        t1 = time.time()
 
         ptype = td.SimplePredict(plate)
         if ptype>0 and ptype<4:
             plate = cv2.bitwise_not(plate)
-        # demo = verticalEdgeDetection(plate)
+ 
 
         image_rgb = fm.findContoursAndDrawBoundingBox(plate)
         image_rgb = fv.finemappingVertical(image_rgb)
         cache.verticalMappingToFolder(image_rgb)
-        # print time.time() - t1,"校正"
+
         print("e2e:",e2e.recognizeOne(image_rgb)[0])
         image_gray = cv2.cvtColor(image_rgb,cv2.COLOR_BGR2GRAY)
 
         cv2.imwrite("./"+str(j)+".jpg",image_gray)
-        # image_gray = horizontalSegmentation(image_gray)
 
-        t2 = time.time()
         res, confidence = e2e.recognizeOne(image_rgb)
         res_json = {}
         if confidence  > 0.6:
@@ -150,31 +136,20 @@ def RecognizePlateJson(image):
     return json.dumps(jsons,ensure_ascii=False)
 
 
-
-
 def SimpleRecognizePlateByE2E(image):
-    t0 = time.time()
-    images = detect.detectPlateRough(image,image.shape[0],top_bottom_padding_rate=0.1)
+    images = detect.detectPlateRough(image,image.shape[0], top_bottom_padding_rate=0.1)
     res_set = []
-    for j,plate in enumerate(images):
-        plate, rect, origin_plate  =plate
-        # plate = cv2.cvtColor(plate, cv2.COLOR_RGB2GRAY)
-        plate  =cv2.resize(plate,(136,36*2))
-        res,confidence = e2e.recognizeOne(origin_plate)
-        print("res",res)
+    for _, plate in enumerate(images):
+        plate, rect, origin_plate = plate
+        plate = cv2.resize(plate, (136, 36*2))
 
-        t1 = time.time()
         ptype = td.SimplePredict(plate)
         if ptype>0 and ptype<5:
-            # pass
             plate = cv2.bitwise_not(plate)
         image_rgb = fm.findContoursAndDrawBoundingBox(plate)
         image_rgb = fv.finemappingVertical(image_rgb)
         image_rgb = fv.finemappingVertical(image_rgb)
-        cache.verticalMappingToFolder(image_rgb)
-        #cv2.imwrite("./"+str(j)+".jpg",image_rgb)
-        res,confidence = e2e.recognizeOne(image_rgb)
-        print(res,confidence)
+        res, confidence = e2e.recognizeOne(image_rgb)
         res_set.append([[],res,confidence])
 
         if confidence>0.7:
@@ -187,8 +162,7 @@ def SimpleRecognizePlate(image):
     images = detect.detectPlateRough(image,image.shape[0],top_bottom_padding_rate=0.1)
     res_set = []
     for j,plate in enumerate(images):
-        plate, rect, origin_plate  =plate
-        # plate = cv2.cvtColor(plate, cv2.COLOR_RGB2GRAY)
+        plate, rect, origin_plate = plate
         plate  =cv2.resize(plate,(136,36*2))
         t1 = time.time()
 
@@ -200,30 +174,22 @@ def SimpleRecognizePlate(image):
 
         image_rgb = fv.finemappingVertical(image_rgb)
         cache.verticalMappingToFolder(image_rgb)
-        print("e2e:", e2e.recognizeOne(image_rgb))
+
         image_gray = cv2.cvtColor(image_rgb,cv2.COLOR_RGB2GRAY)
 
-        # image_gray = horizontalSegmentation(image_gray)
         cv2.imshow("image_gray",image_gray)
-        # cv2.waitKey()
 
         cv2.imwrite("./"+str(j)+".jpg",image_gray)
-        # cv2.imshow("image",image_gray)
-        # cv2.waitKey(0)
-        print("校正",time.time() - t1,"s")
-        # cv2.imshow("image,",image_gray)
-        # cv2.waitKey(0)
+
         t2 = time.time()
         val = segmentation.slidingWindowsEval(image_gray)
-        # print val
-        print("分割和识别",time.time() - t2,"s")
+
         if len(val)==3:
             blocks, res, confidence = val
             if confidence/7>0.7:
                 image =  drawRectBox(image,rect,res)
                 res_set.append(res)
                 for i,block in enumerate(blocks):
-
                     block_ = cv2.resize(block,(25,25))
                     block_ = cv2.cvtColor(block_,cv2.COLOR_GRAY2BGR)
                     image[j * 25:(j * 25) + 25, i * 25:(i * 25) + 25] = block_

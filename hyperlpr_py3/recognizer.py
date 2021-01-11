@@ -1,13 +1,5 @@
-#coding=utf-8
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D,MaxPool2D
-from keras.optimizers import SGD
-from keras import backend as K
-
-K.image_data_format()
-
-
+#coding=utf-
+import tensorflow as tf
 import cv2
 import numpy as np
 
@@ -39,31 +31,22 @@ def Getmodel_tensorflow(nb_classes):
     # convolution kernel size
     nb_conv = 3
 
-    # x = np.load('x.npy')
-    
-    # y = np_utils.to_categorical(range(3062)*45*5*2, nb_classes)
-    # weight = ((type_class - np.arange(type_class)) / type_class + 1) ** 3
-    # weight = dict(zip(range(3063), weight / weight.mean()))  # 调整权重，高频字优先
-
-    model = Sequential()
-    model.add(Conv2D(32, (5, 5),input_shape=(img_rows, img_cols,1)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Dropout(0.25))
-    model.add(Conv2D(32, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Dropout(0.25))
-    model.add(Conv2D(512, (3, 3)))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
-    # model.add(Dropout(0.25))
-    model.add(Flatten())
-    model.add(Dense(512))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Conv2D(32, (5, 5),input_shape=(img_rows, img_cols,1)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Dropout(0.25))
+    model.add(tf.keras.layers.Conv2D(32, (3, 3)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Dropout(0.25))
+    model.add(tf.keras.layers.Conv2D(512, (3, 3)))
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(512))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dropout(0.5))
+    model.add(tf.keras.layers.Dense(nb_classes))
+    model.add(tf.keras.layers.Activation('softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
@@ -88,31 +71,26 @@ def Getmodel_ch(nb_classes):
     # weight = ((type_class - np.arange(type_class)) / type_class + 1) ** 3
     # weight = dict(zip(range(3063), weight / weight.mean()))  # 调整权重，高频字优先
 
-    model = Sequential()
-    model.add(Conv2D(32, (5, 5),input_shape=(img_rows, img_cols,1)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Dropout(0.25))
-    model.add(Conv2D(32, (3, 3)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Dropout(0.25))
-    model.add(Conv2D(512, (3, 3)))
-    # model.add(Activation('relu'))
-    # model.add(MaxPooling2D(pool_size=(nb_pool, nb_pool)))
-    # model.add(Dropout(0.25))
-    model.add(Flatten())
-    model.add(Dense(756))
-    model.add(Activation('relu'))
-    model.add(Dropout(0.5))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Conv2D(32, (5, 5),input_shape=(img_rows, img_cols,1)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Dropout(0.25))
+    model.add(tf.keras.layers.Conv2D(32, (3, 3)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Dropout(0.25))
+    model.add(tf.keras.layers.Conv2D(512, (3, 3)))
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(756))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dropout(0.5))
+    model.add(tf.keras.layers.Dense(nb_classes))
+    model.add(tf.keras.layers.Activation('softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
     return model
-
-
 
 model  = Getmodel_tensorflow(65)
 #构建网络
@@ -148,7 +126,5 @@ def SimplePredict(image,pos):
         zero_add = 31
 
     max_id = res.argmax()
-
-
-    return res.max(),chars[max_id+zero_add],max_id+zero_add
+    return res.max(), chars[max_id+zero_add], max_id+zero_add
 

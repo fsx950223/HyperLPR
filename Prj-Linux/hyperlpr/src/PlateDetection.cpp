@@ -5,7 +5,7 @@ PlateDetection::PlateDetection(std::string filename_cascade) {
   cascade.load(filename_cascade);
 };
 void PlateDetection::plateDetectionRough(cv::Mat InputImage,
-                                         std::vector<pr::PlateInfo> &plateInfos,
+                                         std::vector<PlateInfo> &plateInfos,
                                          int min_w, int max_w) {
   cv::Mat processImage;
   cv::cvtColor(InputImage, processImage, cv::COLOR_BGR2GRAY);

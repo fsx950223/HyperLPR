@@ -2,24 +2,12 @@
 import cv2
 import numpy as np
 
-# from matplotlib import pyplot as plt
 import scipy.ndimage.filters as f
-import scipy
 
 import time
 import scipy.signal as l
 
-
-
-
-
-from keras.models import Sequential
-from keras.layers import Dense, Dropout, Activation, Flatten
-from keras.layers import Conv2D, MaxPool2D
-from keras.optimizers import SGD
-from keras import backend as K
-
-K.image_data_format()
+import tensorflow as tf
 
 
 def Getmodel_tensorflow(nb_classes):
@@ -31,25 +19,21 @@ def Getmodel_tensorflow(nb_classes):
     nb_pool = 2
     # convolution kernel size
     nb_conv = 3
-    # x = np.load('x.npy')
-    # y = np_utils.to_categorical(range(3062)*45*5*2, nb_classes)
-    # weight = ((type_class - np.arange(type_class)) / type_class + 1) ** 3
-    # weight = dict(zip(range(3063), weight / weight.mean()))  # 调整权重，高频字优先
 
-    model = Sequential()
-    model.add(Conv2D(nb_filters, (nb_conv, nb_conv),input_shape=(img_rows, img_cols,1)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Conv2D(nb_filters, (nb_conv, nb_conv)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Flatten())
-    model.add(Dense(256))
-    model.add(Dropout(0.5))
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Conv2D(nb_filters, (nb_conv, nb_conv),input_shape=(img_rows, img_cols,1)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Conv2D(nb_filters, (nb_conv, nb_conv)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(256))
+    model.add(tf.keras.layers.Dropout(0.5))
 
-    model.add(Activation('relu'))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dense(nb_classes))
+    model.add(tf.keras.layers.Activation('softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='sgd',
                   metrics=['accuracy'])
@@ -71,36 +55,30 @@ def Getmodel_tensorflow_light(nb_classes):
     # weight = ((type_class - np.arange(type_class)) / type_class + 1) ** 3
     # weight = dict(zip(range(3063), weight / weight.mean()))  # 调整权重，高频字优先
 
-    model = Sequential()
-    model.add(Conv2D(nb_filters, (nb_conv, nb_conv),input_shape=(img_rows, img_cols, 1)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Conv2D(nb_filters, (nb_conv * 2, nb_conv * 2)))
-    model.add(Activation('relu'))
-    model.add(MaxPool2D(pool_size=(nb_pool, nb_pool)))
-    model.add(Flatten())
-    model.add(Dense(32))
-    # model.add(Dropout(0.25))
+    model = tf.keras.Sequential()
+    model.add(tf.keras.layers.Conv2D(nb_filters, (nb_conv, nb_conv),input_shape=(img_rows, img_cols, 1)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Conv2D(nb_filters, (nb_conv * 2, nb_conv * 2)))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.MaxPool2D(pool_size=(nb_pool, nb_pool)))
+    model.add(tf.keras.layers.Flatten())
+    model.add(tf.keras.layers.Dense(32))
 
-    model.add(Activation('relu'))
-    model.add(Dense(nb_classes))
-    model.add(Activation('softmax'))
+    model.add(tf.keras.layers.Activation('relu'))
+    model.add(tf.keras.layers.Dense(nb_classes))
+    model.add(tf.keras.layers.Activation('softmax'))
     model.compile(loss='categorical_crossentropy',
                   optimizer='adam',
                   metrics=['accuracy'])
     return model
 
 
-
-
 model  = Getmodel_tensorflow_light(3)
 model2  = Getmodel_tensorflow(3)
 
-import os
 model.load_weights("./model/char_judgement1.h5")
-# model.save("./model/char_judgement1.h5")
 model2.load_weights("./model/char_judgement.h5")
-# model2.save("./model/char_judgement.h5")
 
 
 model = model2
@@ -151,12 +129,7 @@ def searchOptimalCuttingPoint(rgb,res_map,start,width_boundingbox,interval_range
     print(p)
 
     score_list = sorted(score_list , key=lambda x:x[0])
-    # for one in score_list[-1][1]:
-    #     cv2.line(debug,(one,0),(one,36),(255,0,0),1)
-    # #
-    # cv2.imshow("one",debug)
-    # cv2.waitKey(0)
-    #
+
     print("寻找最佳点",time.time()-t0)
     return score_list[-1]
 
@@ -298,8 +271,6 @@ def slidingWindowsEval(image):
     t0 = time.time()
     for i,one in enumerate(refined):
         res_pre = cRP.SimplePredict(one, i )
-        # cv2.imshow(str(i),one)
-        # cv2.waitKey(0)
         confidence+=res_pre[0]
         name+= res_pre[1]
     print("字符识别",time.time() - t0)

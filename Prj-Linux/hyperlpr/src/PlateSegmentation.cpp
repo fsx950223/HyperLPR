@@ -87,9 +87,7 @@ void PlateSegmentation::refineRegion(cv::Mat &plateImage,
     plateImage(roi).copyTo(roiImage);
 
     if (i >= 1) {
-
       cv::Mat roi_thres;
-      //                cv::threshold(roiImage,roi_thres,0,255,cv::THRESH_OTSU|cv::THRESH_BINARY);
 
       niBlackThreshold(roiImage, roi_thres, 255, cv::THRESH_BINARY, 15, 0.27,
                        BINARIZATION_NIBLACK);
@@ -127,46 +125,21 @@ void PlateSegmentation::refineRegion(cv::Mat &plateImage,
         else
           final_bdbox = boxPadding(final_bdbox, padding, padding, padding,
                                    padding, roiImage.size());
-
-//                    std::cout<<final_bdbox<<std::endl;
-//                    std::cout<<roiImage.size()<<std::endl;
-#ifdef DEBUG
-        cv::imshow("char_thres", roi_thres);
-
-        cv::imshow("char", roiImage(final_bdbox));
-        cv::waitKey(0);
-#endif
       }
-
       final_bdbox.x += left;
-
       rects.push_back(final_bdbox);
-      //
-
     } else {
       rects.push_back(roi);
     }
-
-    //            else
-    //            {
-    //
-    //            }
-
-    //            cv::GaussianBlur(roiImage,roiImage,cv::Size(7,7),3);
-    //
-    //            cv::imshow("image",roiImage);
-    //            cv::waitKey(0);
   }
 }
 void avgfilter(float *angle_list, int size, int windowsSize) {
   float *filterd = new float[size];
   for (int i = 0; i < size; i++)
     filterd[i] = angle_list[i];
-  //        memcpy(filterd,angle_list,size);
 
   cv::Mat kernal_gaussian = cv::getGaussianKernel(windowsSize, 3, CV_32F);
   float *kernal = (float *)kernal_gaussian.data;
-  //        kernal+=windowsSize;
   int r = windowsSize / 2;
 
   for (int i = 0; i < size; i++) {
@@ -175,7 +148,6 @@ void avgfilter(float *angle_list, int size, int windowsSize) {
       if (i + j - r > 0 && i + j + r < size - 1)
         avg += filterd[i + j - r] * kernal[j];
     }
-    //            avg = avg / windowsSize;
     angle_list[i] = avg;
   }
 

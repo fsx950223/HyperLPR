@@ -26,7 +26,6 @@ PipelinePR::PipelinePR(std::string detector_filename,
 }
 
 PipelinePR::~PipelinePR() {
-
   delete plateDetection;
   delete fineMapping;
   delete plateSegmentation;
@@ -37,14 +36,14 @@ PipelinePR::~PipelinePR() {
 std::vector<PlateInfo> PipelinePR::RunPiplineAsImage(cv::Mat plateImage,
                                                      int method) {
   std::vector<PlateInfo> results;
-  std::vector<pr::PlateInfo> plates;
+  std::vector<PlateInfo> plates;
   plateDetection->plateDetectionRough(plateImage, plates, 36, 700);
 
-  for (pr::PlateInfo plateinfo : plates) {
+  for (PlateInfo plateinfo : plates) {
 
     cv::Mat image_finemapping = plateinfo.getPlateImage();
     image_finemapping = fineMapping->FineMappingVertical(image_finemapping);
-    image_finemapping = pr::fastdeskew(image_finemapping, 5);
+    image_finemapping = fastdeskew(image_finemapping, 5);
     // Segmentation-based
     if (method == SEGMENTATION_BASED_METHOD) {
       image_finemapping = fineMapping->FineMappingHorizon(image_finemapping, 2,
@@ -59,11 +58,8 @@ std::vector<PlateInfo> PipelinePR::RunPiplineAsImage(cv::Mat plateImage,
                          cv::BORDER_REPLICATE);
       plateinfo.setPlateImage(image_finemapping);
       generalRecognizer->SegmentBasedSequenceRecognition(plateinfo);
-      plateinfo.decodePlateNormal(pr::CH_PLATE_CODE);
-
-    }
-    // Segmentation-free
-    else if (method == SEGMENTATION_FREE_METHOD) {
+      plateinfo.decodePlateNormal(CH_PLATE_CODE);
+    }else if (method == SEGMENTATION_FREE_METHOD) {
       image_finemapping = fineMapping->FineMappingHorizon(
           image_finemapping, 4, HorizontalPadding + 3);
       cv::resize(image_finemapping, image_finemapping,
@@ -71,7 +67,7 @@ std::vector<PlateInfo> PipelinePR::RunPiplineAsImage(cv::Mat plateImage,
       plateinfo.setPlateImage(image_finemapping);
       std::pair<std::string, float> res =
           segmentationFreeRecognizer->SegmentationFreeForSinglePlate(
-              plateinfo.getPlateImage(), pr::CH_PLATE_CODE);
+              plateinfo.getPlateImage(), CH_PLATE_CODE);
       plateinfo.confidence = res.second;
       plateinfo.setPlateName(res.first);
     }
